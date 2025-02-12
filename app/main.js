@@ -15,7 +15,7 @@
   \*********************/
 /***/ (() => {
 
-eval("/*\nPrimary App Class\n */\nclass App {\n  constructor() {\n    console.log('HTML5 Audio Experiment is ready');\n  }\n}\n\n/*\nInitialise!\n */\nwindow.onload = function () {\n  window.app = new App();\n};\n\n//# sourceURL=webpack://html5-audio-experiment/./src/main.js?");
+eval("const KEYS = 'qwerty'.split('');\n\n/*\nPrimary App Class\n */\nclass App {\n  constructor() {\n    console.log('HTML5 Audio Experiment is ready');\n    this.musicKeys = [];\n    this.musicKey_onClick = this.musicKey_onClick.bind(this);\n    this.app_onKeyUp = this.app_onKeyUp.bind(this);\n    this.setupUI();\n  }\n  setupUI() {\n    const htmlMain = document.querySelector('main');\n    htmlMain.addEventListener('keyup', this.app_onKeyUp);\n    const htmlMusicKeysContainer = document.querySelector('#music-keys');\n    for (let i = 0; i < KEYS.length; i++) {\n      const charKey = KEYS[i];\n      const htmlLi = document.createElement('li');\n      const htmlButton = document.createElement('button');\n      htmlButton.innerText = charKey.toUpperCase();\n      htmlButton.dataset.char = charKey;\n      htmlButton.addEventListener('click', this.musicKey_onClick);\n      htmlLi.appendChild(htmlButton);\n      htmlMusicKeysContainer.appendChild(htmlLi);\n    }\n    htmlMain.focus();\n  }\n  app_onKeyUp(e) {\n    const key = e.key.toLowerCase();\n    if (KEYS.includes(key)) this.playKey(key);\n  }\n  musicKey_onClick(e) {\n    this.playKey(e.target.dataset.char);\n  }\n  playKey(char) {\n    console.log('Play Key: ', char);\n  }\n}\n\n/*\nInitialise!\n */\nwindow.onload = function () {\n  window.app = new App();\n};\n\n//# sourceURL=webpack://html5-audio-experiment/./src/main.js?");
 
 /***/ })
 
