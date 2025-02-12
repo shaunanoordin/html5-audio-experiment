@@ -77,10 +77,8 @@ class App {
   }
 
   app_onKeyUp (e) {
-    if (!this.initialised && (
-      e.key === 'Enter' || e.key === ' '
-    )) {
-      this.initAfterUserInput()
+    if (!this.initialised) {
+      if (e.key === 'Enter' || e.key === ' ') this.initAfterUserInput()
       return
     }
 
@@ -98,18 +96,31 @@ class App {
   }
 
   playKey (char) {
-    const audioContext = this.audioContext
     console.log('Play Key: ', char)
 
     switch (char) {
       case 'q':
-        const audioSource = audioContext.createBufferSource()
-        audioSource.buffer = this.audioData['splash']
-        audioSource.connect(audioContext.destination)
-
-        audioSource.start()
+        this.playSoundFromAudioData('splash')
         break
     }
+  }
+
+  /*
+  Play an instance of a sound from registered audio data.
+  For every instance of a sound, create a new AudioBufferSourceNode.
+  Each AudioBufferSourceNode can only have .start() called once.
+   */
+  playSoundFromAudioData (name) {
+    if (!name || !this.audioData?.[name]) {
+      console.error('Can\'t find audio data for ', name)
+      return
+    }
+
+    const audioContext = this.audioContext
+    const audioSource = audioContext.createBufferSource()
+    audioSource.buffer = this.audioData[name]
+    audioSource.connect(audioContext.destination)
+    audioSource.start()
   }
 }
 
