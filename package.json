@@ -1,13 +1,13 @@
 {
-  "name": "starter-web-app",
-  "version": "0.0.9",
-  "description": "Starter template for HTML5 + JavaScript + Sass web app projects.",
-  "homepage": "https://github.com/shaunanoordin/starter-web-app/",
+  "name": "html5-audio-experiment",
+  "version": "0.0.1",
+  "description": "Hackday experiment to play around with audio in web apps.",
+  "homepage": "https://github.com/shaunanoordin/html5-audio-experiment/",
   "author": "Shaun A. Noordin (https://www.shaunanoordin.com/)",
   "main": "app/index.html",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shaunanoordin/starter-web-app/"
+    "url": "https://github.com/shaunanoordin/html5-audio-experiment/"
   },
   "scripts": {
     "start": "webpack && sass src:app && node server.js",
