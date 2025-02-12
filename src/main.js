@@ -1,5 +1,43 @@
 const KEYS = 'qasdfghj'.split('')
 
+const MUSIC_NOTES_CONFIG = [
+  {
+    keyboardKey: 'a',
+    frequency: 261.63,  // C note, on C major scale
+  },
+  {
+    keyboardKey: 's',
+    frequency: 293.66,  // D note
+  },
+  {
+    keyboardKey: 'd',
+    frequency: 329.63,  // E note
+  },
+  {
+    keyboardKey: 'f',
+    frequency: 349.23,  // F note
+  },
+  {
+    keyboardKey: 'g',
+    frequency: 392,  // G note
+  },
+  {
+    keyboardKey: 'h',
+    frequency: 440,  // A note
+  },
+  {
+    keyboardKey: 'j',
+    frequency: 493.88,  // B note
+  },
+]
+
+const SFX_CONFIG = [
+  {
+    keyboardKey: 'q',
+    name: 'splash',
+  },
+]
+
 /*
 Primary App Class
  */
@@ -13,7 +51,8 @@ class App {
 
     // Bind functions to self
     this.app_onKeyUp = this.app_onKeyUp.bind(this)
-    this.musicKey_onClick = this.musicKey_onClick.bind(this)
+    this.musicNotes_onClick = this.musicNotes_onClick.bind(this)
+    this.sfxButton_onClick = this.sfxButton_onClick.bind(this)
     this.startButton_onClick = this.startButton_onClick.bind(this)
     
     // Setup initial UI
@@ -47,20 +86,34 @@ class App {
   }
 
   setupUI () {
-    const htmlMusicKeysContainer = document.querySelector('#music-keys')
-
-    for (let i = 0 ; i < KEYS.length ; i++) {
-      const charKey = KEYS[i]
+    // Add SFX buttons
+    const htmlSFXButtonsContainer = document.querySelector('#sfx-buttons')
+    SFX_CONFIG.forEach((sfx) => {
       const htmlLi = document.createElement('li')
       const htmlButton = document.createElement('button')
 
-      htmlButton.innerText = charKey.toUpperCase()
-      htmlButton.dataset.char = charKey
-      htmlButton.addEventListener('click', this.musicKey_onClick)
+      htmlButton.innerText = `[${sfx.keyboardKey.toUpperCase()}] ${sfx.name}`
+      htmlButton.dataset.keyboardKey = sfx.keyboardKey
+      htmlButton.addEventListener('click', this.sfxButton_onClick)
 
       htmlLi.appendChild(htmlButton)
-      htmlMusicKeysContainer.appendChild(htmlLi)
-    }
+      htmlSFXButtonsContainer.appendChild(htmlLi)
+    })
+
+    // Add musical notes
+    const htmlMusicNotesContainer = document.querySelector('#music-notes')
+
+    MUSIC_NOTES_CONFIG.forEach((musicNote) => {
+      const htmlLi = document.createElement('li')
+      const htmlButton = document.createElement('button')
+
+      htmlButton.innerText = `[${musicNote.keyboardKey.toUpperCase()}]`
+      htmlButton.dataset.keyboardKey = musicNote.keyboardKey
+      htmlButton.addEventListener('click', this.musicNotes_onClick)
+
+      htmlLi.appendChild(htmlButton)
+      htmlMusicNotesContainer.appendChild(htmlLi)
+    })
   }
 
   async loadFiles () {
@@ -87,18 +140,22 @@ class App {
     if (KEYS.includes(key)) this.playKey(key)
   }
 
-  musicKey_onClick (e) {
-    this.playKey(e.target.dataset.char)
+  musicNotes_onClick (e) {
+    this.playKey(e.target.dataset.keyboardKey)
+  }
+
+  sfxButton_onClick (e) {
+    this.playKey(e.target.dataset.keyboardKey)
   }
 
   startButton_onClick (e) {
     this.initAfterUserInput()
   }
 
-  playKey (char) {
-    console.log('Play Key: ', char)
+  playKey (keyboardKey) {
+    console.log('Play Key: ', keyboardKey)
 
-    switch (char) {
+    switch (keyboardKey) {
       case 'q':
         this.playSoundFromAudioData('splash')
         break
