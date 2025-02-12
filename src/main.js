@@ -34,10 +34,10 @@ class App {
     if (this.initialised) return
 
     // Remove start button
-    document.querySelector('#start-button').removeEventListener('click', this.startButton_onClick)
+    // document.querySelector('#start-button').removeEventListener('click', this.startButton_onClick)  // Is this necessary?
     document.querySelector('#start-button').remove()
 
-    //
+    // Initiate audio system
     this.audioContext = new AudioContext()
     await this.loadFiles()
 
@@ -75,7 +75,9 @@ class App {
   }
 
   app_onKeyUp (e) {
-    if (!this.initialised && e.key === 'Enter') {
+    if (!this.initialised && (
+      e.key === 'Enter' || e.key === ' '
+    )) {
       this.initAfterUserInput()
       return
     }
@@ -94,7 +96,18 @@ class App {
   }
 
   playKey (char) {
+    const audioContext = this.audioContext
     console.log('Play Key: ', char)
+
+    switch (char) {
+      case 'q':
+        const audioSource = audioContext.createBufferSource()
+        audioSource.buffer = this.audioData
+        audioSource.connect(audioContext.destination)
+
+        audioSource.start()
+        break
+    }
   }
 }
 
