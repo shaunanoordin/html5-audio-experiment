@@ -155,32 +155,17 @@ class App {
   playKey (keyboardKey) {
     console.log('Play Key: ', keyboardKey)
 
-    switch (keyboardKey) {
-      case 'q':
-        this.playSoundFromAudioData('splash')
-        break
-      case 'a':
-        this.playSoundFromCode(261.63)  // C
-        break
-      case 's':
-        this.playSoundFromCode(293.66)  // D
-        break
-      case 'd':
-        this.playSoundFromCode(329.63)  // E
-        break
-      case 'f':
-        this.playSoundFromCode(349.23)  // F
-        break
-      case 'g':
-        this.playSoundFromCode(392)  // G
-        break
-      case 'h':
-        this.playSoundFromCode(440)  // A
-        break
-      case 'j':
-        this.playSoundFromCode(493.88)  // B
-        break      
-    }
+    MUSIC_NOTES_CONFIG.forEach((musicNote) => {
+      if (musicNote.keyboardKey === keyboardKey) {
+        this.playSoundFromCode(musicNote.frequency)
+      }
+    })
+
+    SFX_CONFIG.forEach((sfx) => {
+      if (sfx.keyboardKey === keyboardKey) {
+        this.playSoundFromAudioData(sfx.name)
+      }
+    })
   }
 
   /*
