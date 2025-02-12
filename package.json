@@ -1,0 +1,30 @@
+{
+  "name": "starter-web-app",
+  "version": "0.0.9",
+  "description": "Starter template for HTML5 + JavaScript + Sass web app projects.",
+  "homepage": "https://github.com/shaunanoordin/starter-web-app/",
+  "author": "Shaun A. Noordin (https://www.shaunanoordin.com/)",
+  "main": "app/index.html",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shaunanoordin/starter-web-app/"
+  },
+  "scripts": {
+    "start": "webpack && sass src:app && node server.js",
+    "dev": "concurrently \"webpack --watch\" \"sass --watch src:app\" \"node server.js\""
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.8",
+    "@babel/preset-env": "^7.26.8",
+    "babel-loader": "^9.2.1",
+    "concurrently": "^9.1.2",
+    "express": "^4.21.2",
+    "sass": "^1.84.0",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
+  },
+  "engines": {
+    "node": ">=20",
+    "npm": ">=10"
+  }
+}
