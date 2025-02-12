@@ -1,4 +1,4 @@
-const KEYS = 'qwerty'.split('')
+const KEYS = 'qasdfghj'.split('')
 
 /*
 Primary App Class
@@ -102,6 +102,27 @@ class App {
       case 'q':
         this.playSoundFromAudioData('splash')
         break
+      case 'a':
+        this.playSoundFromCode(261.63)  // C
+        break
+      case 's':
+        this.playSoundFromCode(293.66)  // D
+        break
+      case 'd':
+        this.playSoundFromCode(329.63)  // E
+        break
+      case 'f':
+        this.playSoundFromCode(349.23)  // F
+        break
+      case 'g':
+        this.playSoundFromCode(392)  // G
+        break
+      case 'h':
+        this.playSoundFromCode(440)  // A
+        break
+      case 'j':
+        this.playSoundFromCode(493.88)  // B
+        break      
     }
   }
 
@@ -121,6 +142,20 @@ class App {
     audioSource.buffer = this.audioData[name]
     audioSource.connect(audioContext.destination)
     audioSource.start()
+  }
+
+  /*
+  Play an instance of a basic sound like a beep or a boop.
+  For every 
+   */
+  playSoundFromCode (frequencyHz = 440, type = 'sine', duration = 0.1) {
+    const audioContext = this.audioContext
+    const oscillator = audioContext.createOscillator()
+    oscillator.type = type
+    oscillator.frequency.setValueAtTime(frequencyHz, audioContext.currentTime)
+    oscillator.connect(audioContext.destination)
+    oscillator.start()  // Optional: oscillator.start(audioContext.currentTime)
+    oscillator.stop(audioContext.currentTime + duration)
   }
 }
 
