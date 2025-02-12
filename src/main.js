@@ -64,7 +64,9 @@ class App {
   }
 
   async loadFiles () {
-    this.audioData = await this.fetchAudioData('assets/bbc-splash.wav')
+    this.audioData = {
+      splash: await this.fetchAudioData('assets/bbc-splash.wav'),
+    }
   }
 
   async fetchAudioData (filepath) {
@@ -102,7 +104,7 @@ class App {
     switch (char) {
       case 'q':
         const audioSource = audioContext.createBufferSource()
-        audioSource.buffer = this.audioData
+        audioSource.buffer = this.audioData['splash']
         audioSource.connect(audioContext.destination)
 
         audioSource.start()
