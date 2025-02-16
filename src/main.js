@@ -50,6 +50,7 @@ class App {
     this.audioData = undefined
 
     // Bind functions to self
+    this.app_onKeyDown = this.app_onKeyDown.bind(this)
     this.app_onKeyUp = this.app_onKeyUp.bind(this)
     this.musicNotes_onClick = this.musicNotes_onClick.bind(this)
     this.sfxButton_onClick = this.sfxButton_onClick.bind(this)
@@ -58,9 +59,9 @@ class App {
     // Setup initial UI
     const htmlMain = document.querySelector('main')
     htmlMain.addEventListener('keyup', this.app_onKeyUp)
-    htmlMain.focus()
     document.querySelector('#start-button').addEventListener('click', this.startButton_onClick)
-
+    document.querySelector('#start-button').focus()
+    
     // Only initialise after user input
     this.initialised = false
   }
@@ -83,6 +84,7 @@ class App {
     // Cleanup
     this.setupUI()
     this.initialised = true
+    document.querySelector('main').focus()
   }
 
   setupUI () {
@@ -129,43 +131,46 @@ class App {
     return audioData
   }
 
+  app_onKeyDown (e) {
+    if (!this.initialised) return
+  }
+
   app_onKeyUp (e) {
-    if (!this.initialised) {
-      if (e.key === 'Enter' || e.key === ' ') this.initAfterUserInput()
-      return
-    }
+    if (!this.initialised) return
 
-
-    const key = e.key.toLowerCase()
-    if (KEYS.includes(key)) this.playKey(key)
-  }
-
-  musicNotes_onClick (e) {
-    this.playKey(e.target.dataset.keyboardKey)
-  }
-
-  sfxButton_onClick (e) {
-    this.playKey(e.target.dataset.keyboardKey)
-  }
-
-  startButton_onClick (e) {
-    this.initAfterUserInput()
-  }
-
-  playKey (keyboardKey) {
-    console.log('Play Key: ', keyboardKey)
-
+    const keyboardKey = e.key.toLowerCase()
     MUSIC_NOTES_CONFIG.forEach((musicNote) => {
       if (musicNote.keyboardKey === keyboardKey) {
         this.playSoundFromCode(musicNote.frequency)
       }
     })
-
     SFX_CONFIG.forEach((sfx) => {
       if (sfx.keyboardKey === keyboardKey) {
         this.playSoundFromAudioData(sfx.name)
       }
     })
+  }
+
+  musicNotes_onClick (e) {
+    const keyboardKey = e.target.dataset.keyboardKey
+    MUSIC_NOTES_CONFIG.forEach((musicNote) => {
+      if (musicNote.keyboardKey === keyboardKey) {
+        this.playSoundFromCode(musicNote.frequency)
+      }
+    })
+  }
+
+  sfxButton_onClick (e) {
+    const keyboardKey = e.target.dataset.keyboardKey
+    SFX_CONFIG.forEach((sfx) => {
+      if (sfx.keyboardKey === keyboardKey) {
+        this.playSoundFromAudioData(sfx.name)
+      }
+    })
+  }
+
+  startButton_onClick (e) {
+    this.initAfterUserInput()
   }
 
   /*
@@ -174,6 +179,7 @@ class App {
   Each AudioBufferSourceNode can only have .start() called once.
    */
   playSoundFromAudioData (name) {
+    if (!this.initialised) return
     if (!name || !this.audioData?.[name]) {
       console.error('Can\'t find audio data for ', name)
       return
@@ -191,6 +197,7 @@ class App {
   For every 
    */
   playSoundFromCode (frequencyHz = 440, type = 'sine', duration = 0.2, fadeOutDuration = 0.1) {
+    if (!this.initialised) return
     const audioContext = this.audioContext
     const t = audioContext.currentTime
 
