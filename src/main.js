@@ -49,6 +49,9 @@ class App {
     this.audioContext = undefined
     this.audioData = undefined
 
+    // Actively playing sounds
+    this.activeMusicNotes = new Map()
+
     // Bind functions to self
     this.app_onKeyDown = this.app_onKeyDown.bind(this)
     this.app_onKeyUp = this.app_onKeyUp.bind(this)
@@ -58,6 +61,7 @@ class App {
     
     // Setup initial UI
     const htmlMain = document.querySelector('main')
+    htmlMain.addEventListener('keydown', this.app_onKeyDown)
     htmlMain.addEventListener('keyup', this.app_onKeyUp)
     document.querySelector('#start-button').addEventListener('click', this.startButton_onClick)
     document.querySelector('#start-button').focus()
@@ -133,17 +137,21 @@ class App {
 
   app_onKeyDown (e) {
     if (!this.initialised) return
+    const keyboardKey = e.key.toLowerCase()
+
+    if (MUSIC_NOTES_CONFIG.find(mn => mn.keyboardKey === keyboardKey)) {
+      this.startPlayingMusicNote(keyboardKey)
+    }
   }
 
   app_onKeyUp (e) {
     if (!this.initialised) return
-
     const keyboardKey = e.key.toLowerCase()
-    MUSIC_NOTES_CONFIG.forEach((musicNote) => {
-      if (musicNote.keyboardKey === keyboardKey) {
-        this.playSoundFromCode(musicNote.frequency)
-      }
-    })
+
+    if (MUSIC_NOTES_CONFIG.find(mn => mn.keyboardKey === keyboardKey)) {
+      this.stopPlayingMusicNote(keyboardKey)
+    }
+
     SFX_CONFIG.forEach((sfx) => {
       if (sfx.keyboardKey === keyboardKey) {
         this.playSoundFromAudioData(sfx.name)
@@ -194,7 +202,6 @@ class App {
 
   /*
   Play an instance of a basic sound like a beep or a boop.
-  For every 
    */
   playSoundFromCode (frequencyHz = 440, type = 'sine', duration = 0.2, fadeOutDuration = 0.1) {
     if (!this.initialised) return
@@ -218,6 +225,75 @@ class App {
     oscillator.connect(gainNode).connect(audioContext.destination)
     oscillator.start()  // Optional: oscillator.start(audioContext.currentTime)
     oscillator.stop(t + duration)
+  }
+
+  /*
+  Start playing an instance of a basic sound like a beep or a boop, but don't
+  stop until stopPlayingMusicNote() is called.
+  A more advanced version of playSoundFromCode().
+   */
+  startPlayingMusicNote (keyboardKey) {
+    if (!this.initialised || !keyboardKey) return
+    if (this.activeMusicNotes.has(keyboardKey)) return  // Sound is already playing
+
+    // Get sound details
+    const musicNote = MUSIC_NOTES_CONFIG.find(mn => mn.keyboardKey === keyboardKey)
+    if (!musicNote) return
+
+    // Audio setup
+    const audioContext = this.audioContext
+    const t = audioContext.currentTime
+    const fadeInDuration = 0.05
+    const type = 'sine'
+    const frequencyHz = musicNote.frequency
+
+    // Create the sound maker
+    const oscillator = audioContext.createOscillator()
+    oscillator.type = type
+    oscillator.frequency.setValueAtTime(frequencyHz, t)
+
+    // Use the Gain node to slowly increase sound.
+    // If we didn't do this, we'd sometimes her clicking sounds.
+    const gainNode = audioContext.createGain()
+    gainNode.gain.setValueAtTime(0, t)
+    gainNode.gain.linearRampToValueAtTime(1, t + fadeInDuration)
+
+    // Connect the audio nodes together, and then play
+    oscillator.connect(gainNode).connect(audioContext.destination)
+    oscillator.start()  // Optional: oscillator.start(audioContext.currentTime)
+    // oscillator.stop(t + duration)
+
+    // Register actively playing sound
+    this.activeMusicNotes.set(keyboardKey, {
+      oscillator: oscillator,
+      gainNode: gainNode,
+    })
+  }
+
+  /*
+  Stops playing a sound.
+   */
+  stopPlayingMusicNote (keyboardKey) {
+    if (!this.initialised || !keyboardKey) return
+    
+    // Get sound details
+    const musicNote = this.activeMusicNotes.get(keyboardKey)
+    if (!musicNote) return
+
+    // Audio setup
+    const audioContext = this.audioContext
+    const t = audioContext.currentTime
+    const fadeOutDuration = 0.05
+
+    // Stop the sound.
+    // Use the Gain node to slowly taper off the sound.
+    // If we didn't do this, we'd sometimes her clicking sounds.
+    musicNote.gainNode.gain.setValueAtTime(1, t)
+    musicNote.gainNode.gain.linearRampToValueAtTime(0, t + fadeOutDuration)
+    musicNote.oscillator.stop(t + fadeOutDuration)
+
+    // Unregister actively playing sound
+    this.activeMusicNotes.delete(keyboardKey)
   }
 }
 
